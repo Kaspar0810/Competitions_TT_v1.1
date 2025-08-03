@@ -1,5 +1,5 @@
 import sys
-import traceback
+# import traceback
 import logging
 from datetime import datetime
 from pathlib import Path 
@@ -10,54 +10,6 @@ import os
 import logging
 from datetime import datetime
  
-def setup_logging(log_directory="log"):
-    """Настройка системы логирования"""
-    # Создаем папку для логов, если её нет
-    if not os.path.exists(log_directory):
-        os.makedirs(log_directory)
-    # Настройка логгера
-    log_filename = os.path.join(log_directory, f"error_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.log")
- 
-    logging.basicConfig(
-        level=logging.ERROR,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(log_filename, encoding='utf-8'),
-            logging.StreamHandler(sys.stdout)  # Также выводим в консоль
-        ]
-    )
- 
-    return logging.getLogger(__name__)
- 
-def handle_exception(exc_type, exc_value, exc_traceback):
-    """Обработчик необработанных исключений"""
-    if issubclass(exc_type, KeyboardInterrupt):
-        # Не логируем прерывание пользователем
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        return
- 
-    logger = logging.getLogger(__name__)
- 
-    # Формируем сообщение об ошибке
-    error_message = f"Необработанное исключение: {exc_type.__name__}: {exc_value}"
- 
-    # Логируем ошибку
-    logger.error(error_message)
- 
-    # Логируем трассировку стека
-    logger.error("Трассировка стека:", exc_info=(exc_type, exc_value, exc_traceback))
- 
-    # Также выводим в консоль для отладки
-    print(f"Ошибка записана в лог: {error_message}")
- 
-def setup_exception_handler(log_directory="log"):
-    """Установка обработчика исключений"""
-    # Настраиваем логирование
-    setup_logging(log_directory) 
-    # Устанавливаем глобальный обработчик исключений
-sys.excepthook = handle_exception
-
-
 from reportlab.pdfbase.pdfmetrics import registerFontFamily
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -109,6 +61,57 @@ os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
 # width, height = screen_rect.width(), screen_rect.height()
 # import collections
 from playhouse.migrate import * # для удаления, редактирования таблиц DB
+
+def setup_logging(log_directory="log"):
+    """Настройка системы логирования"""
+    # Создаем папку для логов, если её нет
+    if not os.path.exists(log_directory):
+        os.makedirs(log_directory)
+    # Настройка логгера
+    log_filename = os.path.join(log_directory, f"error_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.log")
+
+    # if os.path.getsize(log_filename) == 0:
+    #     os.remove(log_filename)
+    #     print(f"Удален файл: {log_filename}")
+ 
+    logging.basicConfig(
+        level=logging.ERROR,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_filename, encoding='utf-8'),
+            logging.StreamHandler(sys.stdout)  # Также выводим в консоль
+        ]
+    )
+ 
+    return logging.getLogger(__name__)
+ 
+def handle_exception(exc_type, exc_value, exc_traceback):
+    """Обработчик необработанных исключений"""
+    if issubclass(exc_type, KeyboardInterrupt):
+        # Не логируем прерывание пользователем
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+ 
+    logger = logging.getLogger(__name__)
+ 
+    # Формируем сообщение об ошибке
+    error_message = f"Необработанное исключение: {exc_type.__name__}: {exc_value}"
+ 
+    # Логируем ошибку
+    logger.error(error_message)
+ 
+    # Логируем трассировку стека
+    logger.error("Трассировка стека:", exc_info=(exc_type, exc_value, exc_traceback))
+ 
+    # Также выводим в консоль для отладки
+    print(f"Ошибка записана в лог: {error_message}")
+ 
+def setup_exception_handler(log_directory="log"):
+    """Установка обработчика исключений"""
+    # Настраиваем логирование
+    setup_logging(log_directory) 
+    # Устанавливаем глобальный обработчик исключений
+sys.excepthook = handle_exception
 
 if not os.path.isdir("table_pdf"):  # создает папку 
     os.mkdir("table_pdf")
@@ -732,22 +735,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         filename, filter = QtWidgets.QFileDialog.getSaveFileName(my_win, 'Выберите файл для сохранения','backup_db','*.sql')
 
-
     def log_file_read(self):
         """Чтение лог файлов"""
         my_win.listWidget.clear()
-        files = []
+        del_files_list = []
+        cur_files_list = []
         # Указываем путь к директории
         directory = pathlib.Path.cwd()
         parent_dir = str(f"{directory}\\log") # полный путь к папке log
-        files = os.listdir(parent_dir) # список всех файлов этой папки
-
-        del_files_list = []
-        cur_files_list = []
+        for filename in os.listdir(parent_dir):
+            file_path = os.path.join(parent_dir, filename)
+            if os.path.isfile(file_path) and os.path.getsize(file_path) == 0:
+                del_files_list.append(filename)
+            else:
+                cur_files_list.append(filename)
+   
         current_date = datetime.now().strftime('%Y-%m-%d') # текущая дата в формате 01_01_2000
         cur_date = datetime.strptime(current_date, '%Y-%m-%d') # получаем текущую дату
     
-        for f in files:
+        for f in cur_files_list:
             znak = f.find("_")
             date_file = f[znak + 1:znak + 11]
             Year = date_file[:4]
@@ -759,13 +765,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if time_difference > timedelta(days=1):
                 file_path = os.path.join(parent_dir, f)
                 os.remove(file_path)
-            else:
-                cur_files_list.append(f)
-        count_cur = len(cur_files_list)
         my_win.tabWidget.setCurrentIndex(1)
         my_win.listWidget.addItems(cur_files_list)
         my_win.label_63.setText("Список log файлов")
-
 
     def statistika(self):
         """статистика встреч для точного обсчета рейтинга"""
@@ -2610,13 +2612,13 @@ def fill_table(player_list):
     data_table_tmp = []
     data_table_list = []
     sender = my_win.sender()
-    # start = time.time()
     model = MyTableModel(data)
     tb = my_win.tabWidget.currentIndex()
 
     player_selected = player_list.dicts().execute()
     
     row_count = len(player_selected)  # кол-во строк в таблице
+    # column_count = len(player_selected[0])  # кол-во столбцов в таблице
     num_columns = [0, 1, 2, 3, 4, 5, 6]
 
     # кол-во наваний должно совпадать со списком столбцов
@@ -2644,9 +2646,16 @@ def fill_table(player_list):
             model.setHorizontalHeaderLabels(['id','Фамилия Имя', 'Регион', 'Тренер', 'R', 'Финал', 'Место в финале']) 
     elif tb == 3: # результаты
         num_columns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        model.setHorizontalHeaderLabels(['id',' Стадия', 'Группа', 'Встреча', '1-й игрок', '2-й игрок', 'Победитель', 'Очки','Общ. счет', 'Счет в партиях']) 
+        model.setHorizontalHeaderLabels(['id',' Стадия', 'Группа', 'Встреча', '1-й игрок', '2-й игрок', 'Победитель', 'Очки','Общ. счет', 'Счет в партиях'])
+    elif tb == 4:
+        tb_double = my_win.tabWidget_3.currentIndex()
+        if tb_double == 0:
+            model.setHorizontalHeaderLabels(['id','Фамилия Имя', 'ДР', 'R', 'Город', 'Регион', 'Разряд', 'Тренер', 'Место']) 
+        else:
+           model.setHorizontalHeaderLabels(['id',' Стадия', 'Группа', 'Встреча', '1-й игрок', '2-й игрок', 'Победитель', 'Очки','Общ. счет', 'Счет в партиях']) 
     elif tb == 5: # рейтинг
-        model.setHorizontalHeaderLabels(['id',' Место', 'R', 'Фамилия Имя', 'Дата рождения', 'Город', 'Регион']) 
+        num_columns = [0, 1, 2, 3, 4, 5, 6, 7]
+        model.setHorizontalHeaderLabels(['id', 'Место', 'R', 'Фамилия Имя', 'Дата рождения', 'Город', 'Регион', 'Округ']) 
     elif tb == 6:
         if sender == my_win.lineEdit_find_player_stat:
             num_columns = [0, 1, 2, 3, 4, 5, 6, 7]
@@ -2654,12 +2663,7 @@ def fill_table(player_list):
         else:
             num_columns = [0, 1, 4, 5, 6, 7, 8]
             model.setHorizontalHeaderLabels(['id','Этап', 'Игрок-1', 'Игрок-2', 'Победитель', 'Тренер', ''])
-    elif tb == 4:
-        tb_double = my_win.tabWidget_3.currentIndex()
-        if tb_double == 0:
-            model.setHorizontalHeaderLabels(['id','Фамилия Имя', 'ДР', 'R', 'Город', 'Регион', 'Разряд', 'Тренер', 'Место']) 
-        else:
-           model.setHorizontalHeaderLabels(['id',' Стадия', 'Группа', 'Встреча', '1-й игрок', '2-й игрок', 'Победитель', 'Очки','Общ. счет', 'Счет в партиях'])  
+      
 
     if tb == 1:
         if my_win.checkBox_15.isChecked():
@@ -2722,6 +2726,10 @@ def fill_table(player_list):
                 item_9 = str(list(player_selected[row].values())[num_columns[8]])
                 item_10 = str(list(player_selected[row].values())[num_columns[9]])
                 data_table_tmp = [item_8, item_9, item_10]
+                data_table_list.extend(data_table_tmp)
+            elif tb == 5:
+                item_8 = str(list(player_selected[row].values())[num_columns[7]])
+                data_table_tmp = [item_8]
                 data_table_list.extend(data_table_tmp)
             elif tb == 6:
                 if sender != my_win.lineEdit_find_player_stat:
@@ -2885,15 +2893,7 @@ def _fill_table(player_list): # ============== вариант эксперемн
         my_win.tableView.setFont(font)
         my_win.tableView.horizontalHeader().setFont(QFont("Times", 12, QFont.Bold)) # делает заголовки жирный и размер 13
         my_win.tableView.horizontalHeader().setStyleSheet("background-color:yellow;") # делает фон заголовков светлоголубой
-        # Установка размеров столбцов
-        # header = table_view.horizontalHeader()
-        # header.setSectionResizeMode(QHeaderView.Stretch)
-        # # Установка размеров строкh
-        # eader = table_view.verticalHeader()
-        # header.setSectionResizeMode(QHeaderView.ResizeToContents)
         my_win.tableView.verticalHeader().setDefaultSectionSize(16) # высота строки 20 пикселей
-        # my_win.tableView.setSortingEnabled(True)
-        # my_win.tableView.setSectionResizeMode(QHeaderView.ResizeToContents)
         my_win.tableView.resizeColumnsToContents() # растягивает по содержимому
         my_win.tableView.horizontalHeader().setStretchLastSection(True) # растягивает последнюю колонку до конца
         my_win.tableView.setGridStyle(QtCore.Qt.SolidLine) # вид линии сетки 
