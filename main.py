@@ -70,10 +70,6 @@ def setup_logging(log_directory="log"):
     # Настройка логгера
     log_filename = os.path.join(log_directory, f"error_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.log")
 
-    # if os.path.getsize(log_filename) == 0:
-    #     os.remove(log_filename)
-    #     print(f"Удален файл: {log_filename}")
- 
     logging.basicConfig(
         level=logging.ERROR,
         format='%(asctime)s - %(levelname)s - %(message)s',
@@ -146,7 +142,9 @@ class MyTableModel(QAbstractTableModel):
         self.horizontalHeaderLabels = horizontalHeaderLabels
  
     def headerData(self, section: int, orientation: QtCore.Qt.Orientation, role: QtCore.Qt.ItemDataRole):
-        if (orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole and len(self.horizontalHeaderLabels) == self.columnCount(None)):
+        # if (orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole and len(self.horizontalHeaderLabels) == self.columnCount(None)):
+        if (orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole):
+        
             return self.horizontalHeaderLabels[section]
             # return self._data.columns[section]
         return super().headerData(section, orientation, role)
@@ -2654,8 +2652,8 @@ def fill_table(player_list):
         else:
            model.setHorizontalHeaderLabels(['id',' Стадия', 'Группа', 'Встреча', '1-й игрок', '2-й игрок', 'Победитель', 'Очки','Общ. счет', 'Счет в партиях']) 
     elif tb == 5: # рейтинг
-        num_columns = [0, 1, 2, 3, 4, 5, 6, 7]
-        model.setHorizontalHeaderLabels(['id', 'Место', 'R', 'Фамилия Имя', 'Дата рождения', 'Город', 'Регион', 'Округ']) 
+        num_columns = [0, 1, 2, 3, 4, 5, 6]
+        model.setHorizontalHeaderLabels(['id', 'Место', 'R', 'Фамилия Имя', 'Дата рождения', 'Город', 'Регион']) 
     elif tb == 6:
         if sender == my_win.lineEdit_find_player_stat:
             num_columns = [0, 1, 2, 3, 4, 5, 6, 7]
@@ -2727,10 +2725,10 @@ def fill_table(player_list):
                 item_10 = str(list(player_selected[row].values())[num_columns[9]])
                 data_table_tmp = [item_8, item_9, item_10]
                 data_table_list.extend(data_table_tmp)
-            elif tb == 5:
-                item_8 = str(list(player_selected[row].values())[num_columns[7]])
-                data_table_tmp = [item_8]
-                data_table_list.extend(data_table_tmp)
+            # elif tb == 5:
+            #     item_8 = str(list(player_selected[row].values())[num_columns[7]])
+            #     data_table_tmp = [item_8]
+            #     data_table_list.extend(data_table_tmp)
             elif tb == 6:
                 if sender != my_win.lineEdit_find_player_stat:
                     coach_id = str(list(player_selected[row].values())[num_columns[7]])
@@ -10629,8 +10627,10 @@ def color_region_in_tableWidget(fg):
 
 def hide_show_columns(tb):
     """скрывает или показывает столбцы TableView"""
+    # my_win.tableView.hideColumn(0)
     for k in range(0, 19):
         my_win.tableView.hideColumn(k)
+
     if tb == 0: # титул
         pass
     elif tb == 1: # участники
@@ -10664,6 +10664,14 @@ def hide_show_columns(tb):
         my_win.tableView.showColumn(6) # победитель        
         my_win.tableView.showColumn(8) # общий счет
         my_win.tableView.showColumn(9) # счет в партиях
+    elif tb == 5:
+        my_win.tableView.showColumn(1)
+        my_win.tableView.showColumn(2)
+        my_win.tableView.showColumn(3)
+        my_win.tableView.showColumn(4)
+        my_win.tableView.showColumn(5)
+        my_win.tableView.showColumn(6)
+        my_win.tableView.showColumn(7)
     elif tb == 6:
         # my_win.tableView.showColumn(0)
         my_win.tableView.showColumn(1)
