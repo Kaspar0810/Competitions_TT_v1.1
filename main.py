@@ -296,19 +296,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
         # Создание бэкап DB при закрытии формы -main- по нажатию на крестик
         sender = my_win.sender()
-        if sender != self.exitAction:
-            reply = QMessageBox.question\
-                    (self, 'Вы нажали на крестик',
-                        "Вы уверены, что хотите уйти?\n"
-                        "и сделать копию DB с коментарием\n"
-                        "то нажмите -Yes-\n",              
-                QMessageBox.Yes,
-                QMessageBox.No)
-            if reply == QMessageBox.Yes:
-                flag  = 1
-                exit_comp(flag)
-            # else:
-            #     event.ignore()  
+        msgBox = QMessageBox()
+        msgBox.setWindowTitle("Закрыть окно и выйти.")
+        msgBox.setText("Сделать копию DB с коментарием, нажмите -Да-\n"
+                       "Просто выйти, нажмите -Нет-\n"
+                       "Отменить, нажмите -Отмена-\n")
+        btn_yes = QPushButton("Да")
+        btn_no = QPushButton("Нет")
+        btn_cancel = QPushButton("Отмена")
+        # добавили кнопки на диалоговое окно
+        msgBox.addButton(btn_yes, QMessageBox.YesRole)
+        msgBox.addButton(btn_no, QMessageBox.NoRole)
+        msgBox.addButton(btn_cancel, QMessageBox.RejectRole)
+        # показывает диалог и ждем выбора
+        ret = msgBox.exec()
+        # обрабатваем результат
+        if msgBox.clickedButton() == btn_yes:
+            flag  = 1
+            exit_comp(flag)
+        elif msgBox.clickedButton() == btn_no:
+            return
+        elif msgBox.clickedButton() == btn_cancel:
+            event.ignore()
+            
     # ====== создание строки меню ===========
     def _createMenuBar(self):
         menuBar = self.menuBar()
