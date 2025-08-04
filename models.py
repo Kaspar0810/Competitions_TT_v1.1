@@ -252,6 +252,21 @@ class Referee(BaseModel):
         db_table = "referees"
         order_by = "family"
 
+class Players_double(BaseModel):
+    player_1 = CharField(50)
+    region_1 = CharField()
+    r_1 = IntegerField(10)
+    player_2 = CharField(50)
+    region_2 = CharField()
+    r_2 = IntegerField(10)
+    region_main = CharField(50)
+    r_sum = IntegerField(10)
+    double_vid = CharField(10)
+    title_id = ForeignKeyField(Title)
+
+    class Meta:
+        db_tables = "players_double"
+        order_by = "r_sum"
 
 
 

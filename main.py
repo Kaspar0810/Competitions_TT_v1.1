@@ -318,7 +318,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
         elif msgBox.clickedButton() == btn_cancel:
             event.ignore()
-            
+
     # ====== создание строки меню ===========
     def _createMenuBar(self):
         menuBar = self.menuBar()
@@ -3249,6 +3249,7 @@ def add_player():
         my_win.Button_del_player.setEnabled(False) 
         my_win.lineEdit_id.clear()       
     my_win.lineEdit_Family_name.setFocus()
+
 
 
 def find_otchestvo():
@@ -18122,7 +18123,37 @@ def two_3_place():
 
 def add_double_player_to_list():
     """добавляет пару в списки"""
-    pass
+    msgBox = QMessageBox()    
+    flag = False
+    tb_vid = my_win.tabWidget_para.currentIndex()
+    if tb_vid == 0:
+        vid = "man"
+    elif tb_vid == 1:
+        vid = "woman"
+    else:
+        vid = "mix"
+    player_list = Players_double.select().where((Players_double.title_id == title_id()) & (Players_double.double_vid == vid))
+
+    txt = my_win.Button_add_double.text()
+    count = len(player_list)
+
+    pl_1 = my_win.lineEdit_pl1_double.text()
+    pl_2 = my_win.lineEdit_pl2_double.text()
+    ct_1 = my_win.lineEdit_city_pl1.text()
+    ct_2 = my_win.lineEdit_city_pl2.text()
+    r_1 = int(my_win.r_pl1.text())
+    r_2 = int(my_win.r_pl2.text())
+    sum_r = r_1 + r_2
+    if r_1 > r_2:
+        city_main = ct_1
+    elif r_1 < r_2:
+        city_main = ct_2
+    else:
+        city_main = f"{ct_1}/{ct_2}"
+
+    pl_double = Players_double(player_1=pl_1, region_1=ct_1, r_1=r_1, player_2=pl_2,
+                                region_2=ct_2, r_2=r_2, region_main=city_main, r_sum=sum_r,
+                                  double_vid=vid, title_id=title_id()).save()
 
 
 # def proba_pdf():
@@ -18212,81 +18243,58 @@ def add_double_player_to_list():
 #     print("Все записи обновлены")
 # =======        
 def proba():
-#     myconn = pymysql.connect(host = "localhost", user = "root", passwd = "db_pass", database = "mysql_db") 
-# #     # создать таблицу
+    myconn = pymysql.connect(host = "localhost", user = "root", passwd = "db_pass", database = "mysql_db") 
+    # создать таблицу
     
-# #     class Players_full(BaseModel):
-# #         player = CharField(50)    
-# #         bday = DateField()
-# #         city = CharField()
-# #         region = CharField()
-# #         razryad = CharField()
-# #         coach_id = ForeignKeyField(Coach)
-# #         patronymic_id = ForeignKeyField(Patronymic)
+    class Players_double(BaseModel):
+        player_1 = CharField(50)    
+        region_1 = CharField()
+        r_1 = IntegerField()
+        player_2 = CharField(50)
+        region_2 = CharField()
+        r_2 = IntegerField()
+        region_main = CharField()
+        r_sum = IntegerField()
+        double_vid = CharField(30)
+        title_id = ForeignKeyField(Title)
     
-# #         class Meta:
-# #             db_table = "players_full"
-# #             order_by = "player"
+        class Meta:
+            db_table = "players_double"
+            order_by = "r_sum"
 
-# #     db.create_tables([Players_full])
-# #     db.close()
-#     # ============ импорт новых данных ы mysql =========
-    import glob
-    fname = QFileDialog.getOpenFileName(
-        my_win, "Выбрать файл для конвертации в csv", "", "Excel files(*.xls *.xlsx)")
-    filepatch = str(fname[0])
-    mark = filepatch.rfind('/')
-    f_name = filepatch[mark + 1:]
-    # # Конвертация всех XLS файлов в директории
-    # for excel_file in glob.glob(f_name):
-    # # Получение имени файла без расширения
-        # base_name = os.path.splitext(os.path.basename(excel_file))[0]
-    base_name = os.path.splitext(os.path.basename(f_name))[0]
+    db.create_tables([Players_double])
+    db.close()
+     # ============ импорт новых данных в mysql =========
+    # import glob
+    # fname = QFileDialog.getOpenFileName(
+    #     my_win, "Выбрать файл для конвертации в csv", "", "Excel files(*.xls *.xlsx)")
+    # filepatch = str(fname[0])
+    # mark = filepatch.rfind('/')
+    # f_name = filepatch[mark + 1:]
+    # # # Конвертация всех XLS файлов в директории
+    # # for excel_file in glob.glob(f_name):
+    # # # Получение имени файла без расширения
+    #     # base_name = os.path.splitext(os.path.basename(excel_file))[0]
+    # base_name = os.path.splitext(os.path.basename(f_name))[0]
 
-        # Чтение XLS файла
-    df = pd.read_excel(filepatch, sheet_name=0)
+    #     # Чтение XLS файла
+    # df = pd.read_excel(filepatch, sheet_name=0)
 
-        # Настройка форматов для специфичных столбцов
-    if 'Date' in df.columns:
-        df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
+    #     # Настройка форматов для специфичных столбцов
+    # if 'Date' in df.columns:
+    #     df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%Y-%m-%d')
 
-    # Сохранение в CSV с настройками
-    output_file = f'output/{base_name}.csv'
-    df.to_csv(
-    output_file,
-    index=False,
-    encoding='utf-8',
-    sep=';',
-    date_format='%Y-%m-%d'
-    )
-    # print(f"Converted {excel_file} to {output_file}")
-#     import csv
-#     cursor = myconn.cursor()
-#     with open('pl.csv', 'r', encoding='utf-8') as file:
-#         csv_data = csv.reader(file)
-#         next(csv_data)
-#         for row in csv_data:
-#             cursor.execute('INSERT INTO players (id, player, bgay, rank, city, region, razryad, coach_id, mesto, 
-#                            full_name, title_id, pay_rejting, comment, coefficient_victories, 
-#                            total_game_player, total_win_game, application, patronymic_id) VALUES
-#             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', row)
-
-#     db.commit()
-#     cursor.close()
-
- 
-# # #creating the cursor object 
-# #     cur = myconn.cursor() 
-# #     try: 
-# #         #adding a column branch name to the table Employee 
-# #         cur.execute("ALTER TABLE Game_list MODIFY COLUMN player_group_id VARCHAR(30) NULL;") 
-# #     except: 
-# #         myconn.rollback() 
-    
-# #     myconn.close() 
-
-
-#     migrator = MySQLMigrator(db)
+    # # Сохранение в CSV с настройками
+    # output_file = f'output/{base_name}.csv'
+    # df.to_csv(
+    # output_file,
+    # index=False,
+    # encoding='utf-8',
+    # sep=';',
+    # date_format='%Y-%m-%d'
+    # )
+# =====================================================
+ #     migrator = MySQLMigrator(db)
 #     # # no_game = TextField(default="")
 #     patronymic_id = IntegerField(Delete_player)  # новый столбец, его поле и значение по умолчанию
     
