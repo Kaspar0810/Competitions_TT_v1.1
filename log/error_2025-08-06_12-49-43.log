@@ -1,0 +1,10 @@
+2025-08-06 12:49:58,295 - ERROR - Необработанное исключение: NameError: name 'my_in' is not defined
+2025-08-06 12:49:58,312 - ERROR - Трассировка стека:
+Traceback (most recent call last):
+  File "c:\Users\Alex\Competitions_TT_v1.1\main.py", line 1289, in open
+    go_to()
+    ~~~~~^^
+  File "c:\Users\Alex\Competitions_TT_v1.1\main.py", line 2141, in go_to
+    my_in.comboBox_secretary.setCurrentText(titles.secretary)
+    ^^^^^
+NameError: name 'my_in' is not defined

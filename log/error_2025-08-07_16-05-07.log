@@ -1,0 +1,7 @@
+2025-08-07 16:05:26,227 - ERROR - Необработанное исключение: IndexError: list index out of range
+2025-08-07 16:05:26,301 - ERROR - Трассировка стека:
+Traceback (most recent call last):
+  File "c:\Users\Alex\Competitions_TT_v1.1\main.py", line 148, in headerData
+    return self.horizontalHeaderLabels[section]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+IndexError: list index out of range

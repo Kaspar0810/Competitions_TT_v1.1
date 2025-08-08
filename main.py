@@ -1150,17 +1150,12 @@ buttons_layout.setContentsMargins(2, 2, 2, 2)  # Отступы от краев 
 
 
 font = QFont('Times New Roman', 10)
-# font4 = QFont('Times New Roman', 10)
-# Button_turnir_1 = QPushButton("Proba", my_win) # (в каком виджете размещена)
+
 Button_turnir_1 = QPushButton("-#-") # (в каком виджете размещена)
-# Button_turnir_1.resize(58, 20) # размеры кнопки (длина 120, ширина 50)
-# Button_turnir_1.move(11, 30) # разммещение кнопки (от левого края 900, от верхнего 0) от виджета в котором размещен
 Button_turnir_1.setFont(font)
 Button_turnir_1.setFlat(False)
 Button_turnir_1.show()
 Button_turnir_2 = QPushButton("-#-") # (в каком виджете размещена)
-# Button_turnir_2.resize(58, 20) # размеры кнопки (длина 120, ширина 50)
-# Button_turnir_2.move(71, 30) # разммещение кнопки (от левого края 900, от верхнего 0) от виджета в котором размещен
 Button_turnir_2.setFont(font)
 Button_turnir_2.setFlat(False)
 Button_turnir_2.show()
@@ -1716,8 +1711,7 @@ def button_comp_enabled():
         txt_button = Button_turnir_3.text()
     elif sender == Button_turnir_4:
         txt_button = Button_turnir_4.text()
-    # else:
-
+ 
     id_dict = {}
     button_list = [Button_turnir_1, Button_turnir_2, Button_turnir_3, Button_turnir_4]
     t = Title.get(Title.id == title_id())
@@ -1813,7 +1807,7 @@ def button_comp_enabled():
         my_win.setStyleSheet("#MainWindow{background-color:lightpink}")
     else:
         my_win.setStyleSheet("#MainWindow{background-color:lightblue}")
-    fill_table(player_list)
+    # fill_table(player_list)
 
 
 def tab_enabled(id_title):
@@ -1825,7 +1819,7 @@ def tab_enabled(id_title):
 
     sender = my_win.sender()
     vozrast_index = [['Мальчики', 'Девочки'], ['Юноши', 'Девушки'], ['Юниоры', 'Юниорки'], ['Мужчины', 'Женщины']]
-    tab_index = ["Титул", "Участники", "Система", "Результаты"]
+    tab_index = ["Титул", "Участники", "Система", "Результаты", "Пары"]
     titles = Title.select()  # получает все title.id по убыванию
     title_new = Title.select().where(Title.id == id_title).get()
     t_id = title_new.id
@@ -1937,14 +1931,14 @@ def tab_enabled(id_title):
                 break
             l += 1
     gamer = my_win.lineEdit_title_gamer.text()
-    my_win.toolBox.setCurrentIndex(0) # включает toolbox вкладку титул
+    # my_win.toolBox.setCurrentIndex(0) # включает toolbox вкладку титул
     # Скрывает подменю системы в зависимости от созданной системы или нет
     if "Система" not in tab_list:
         my_win.system_edit_Action.setEnabled(False) # делает меню  -редактировать- не видиммым
     else:
         my_win.system_made_Action.setEnabled(False) # делает меню - создать- не видиммым
     enabled_menu_after_choice()
-
+    my_win.toolBox.setCurrentIndex(0) # включает toolbox вкладку титул
 
 def add_open_tab(tab_page):
     """добавляет в таблицу -Title- список открытых вкладок"""
@@ -2089,7 +2083,7 @@ def go_to():
     for btn in buttons:
         if btn.isFlat() is True:
             btn.setFlat(False)
-      # ==== смена названия в меню -перейти к-
+    # ==== смена названия в меню -перейти к-
     t = Title.select().where(Title.id == title_id()).get()
     full_name_current = t.full_name_comp # полное название текущих соревнований
     age_current = t.vozrast
@@ -2122,15 +2116,16 @@ def go_to():
     my_win.comboBox_secretary.setCurrentText(titles.secretary)
     my_win.comboBox_kategor_sec.setCurrentText(titles.kat_sec)
     my_win.lineEdit_title_gamer.setText(titles.gamer)
-    my_win.tabWidget.setCurrentIndex(0)  # открывает вкладку титул
-     #===== new
+
+    my_win.tabWidget.setCurrentIndex(0)  # открывает вкладку титул   
+    #===== new
     tab_enabled(id_title)
     player_list = Player.select().where(Player.title_id == id_title)
     count_player = len(player_list)
-    my_win.label_46.setText(f"Всего: {count_player} участников")
-    
+    my_win.label_46.setText(f"Всего: {count_player} участников")    
     # list_player_pdf(player_list)
     fir_window.load_old()
+
 
 
 def db_select_title():
@@ -2640,11 +2635,11 @@ def fill_table(player_list):
     elif tb == 2: # Система
         stage = my_win.comboBox_filter_choice_stage.currentText()
         if my_win.comboBox_filter_choice_stage.currentIndex() == 0:
-            num_columns = [0, 2, 3, 4, 7, 9, 10, 11, 13, 14, 16]
-            model.setHorizontalHeaderLabels(['id','Фамилия Имя', 'Регион', 'Тренер', 'Группа', 'Место гр',
+            num_columns = [0, 1, 2, 3, 4, 7, 9, 10, 11, 13, 14]
+            model.setHorizontalHeaderLabels(['id', 'id_pl', 'Фамилия Имя', 'Регион', 'Тренер', 'Группа', 'Место гр',
                                               'ПФ', "Группа ПФ", 'Место ПФ', 'Финал', 'Место'])
         elif stage == "Предварительный":
-            num_columns = [0, 2, 3, 4, 5, 7, 9]
+            num_columns = [0, 1, 2, 3, 4, 5, 7, 9]
             model.setHorizontalHeaderLabels(['id','Фамилия Имя', 'Регион', 'Тренер', 'R', 'Группа', 'Место в гр'])
         elif stage == "1-й полуфинал" or stage == "2-й полуфинал":
             num_columns = [0, 2, 3, 4, 5, 10, 11, 13]
@@ -2655,11 +2650,12 @@ def fill_table(player_list):
     elif tb == 3: # результаты
         num_columns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         model.setHorizontalHeaderLabels(['id',' Стадия', 'Группа', 'Встреча', '1-й игрок', '2-й игрок', 'Победитель', 'Очки','Общ. счет', 'Счет в партиях'])
-    elif tb == 4:
+    elif tb == 4: # пары
         tb_double = my_win.tabWidget_3.currentIndex()
-        if tb_double == 0:
-            model.setHorizontalHeaderLabels(['id','Фамилия Имя', 'ДР', 'R', 'Город', 'Регион', 'Разряд', 'Тренер', 'Место']) 
-        else:
+        if tb_double == 0: # владка списка пар
+            num_columns = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+            model.setHorizontalHeaderLabels(['id','Фамилия Имя','Город', 'R','Фамилия Имя','Город', 'R', 'Город', 'R_общ']) 
+        else: # владка результатов пар игр
            model.setHorizontalHeaderLabels(['id',' Стадия', 'Группа', 'Встреча', '1-й игрок', '2-й игрок', 'Победитель', 'Очки','Общ. счет', 'Счет в партиях']) 
     elif tb == 5: # рейтинг
         num_columns = [0, 1, 2, 3, 4, 5, 6]
@@ -2679,7 +2675,7 @@ def fill_table(player_list):
         else:
             my_win.tableView.setSelectionMode(QAbstractItemView.SingleSelection) # выделение одной строки по клику мышью
         my_win.tableView.setSelectionBehavior(QAbstractItemView.SelectRows) 
-    elif tb == 3 or tb == 6:
+    elif tb == 3 or tb == 4 or tb == 6:
         my_win.tableView.setSelectionMode(QAbstractItemView.SingleSelection) # выделение одной строки по клику мышью
         my_win.tableView.setSelectionBehavior(QAbstractItemView.SelectRows) # 
     else:
@@ -2691,7 +2687,7 @@ def fill_table(player_list):
         else:
             my_win.label_78.setText(f"Поиск спортсмена в рейтинге: не найдено ни одной записи.")
 
-    if row_count != 0:  # список удаленных игроков пуст если R = 0
+    if row_count != 0 or row_count == 0:  # список удаленных игроков пуст если R = 0
        
         for row in range(row_count):  # добавляет данные из базы в TableWidget
             item_1 = str(list(player_selected[row].values())[num_columns[0]])
@@ -2735,10 +2731,11 @@ def fill_table(player_list):
                 item_10 = str(list(player_selected[row].values())[num_columns[9]])
                 data_table_tmp = [item_8, item_9, item_10]
                 data_table_list.extend(data_table_tmp)
-            # elif tb == 5:
-            #     item_8 = str(list(player_selected[row].values())[num_columns[7]])
-            #     data_table_tmp = [item_8]
-            #     data_table_list.extend(data_table_tmp)
+            elif tb == 4:
+                item_8 = str(list(player_selected[row].values())[num_columns[7]])
+                item_9 = str(list(player_selected[row].values())[num_columns[8]])
+                data_table_tmp = [item_8, item_9]
+                data_table_list.extend(data_table_tmp)
             elif tb == 6:
                 if sender != my_win.lineEdit_find_player_stat:
                     coach_id = str(list(player_selected[row].values())[num_columns[7]])
@@ -2775,11 +2772,11 @@ def fill_table(player_list):
             row = 0
             my_win.statusbar.showMessage(
                 "Такого спортсмена в рейтинг листе нет нет", 10000)
+        elif tb == 4:
+            my_win.statusbar.showMessage(
+                "Спмсок пар еще пустой", 10000)
     my_win.tableView.show()
-    # finish = time.time()
-    # res = finish - start
-    # res_msec = res * 1000
-    # print('Время работы в миллисекундах: ', res_msec)
+    hide_show_columns(tb, num_columns)
 
 
 def _fill_table(player_list): # ============== вариант эксперемнетальный =============
@@ -3645,6 +3642,7 @@ def tab_double():
     my_win.listWidget_double.clear()
     tab_double = my_win.tabWidget_3.currentIndex()
     if tab_double == 0:
+        # t_id = title_id()
         player = Player.select().where(Player.title_id == title_id())
         if sender == my_win.lineEdit_pl1_double:
             txt = my_win.lineEdit_pl1_double.text()
@@ -3662,6 +3660,97 @@ def tab_double():
         else:
             my_win.textEdit.setText("Такого спортсмена нет!")
 
+
+def tab_double_vid():
+    """Переключает списки пар"""
+    sex_dict = {'man':["Мальчики", "Юноши", "Юниоры", "Мужчины"], 'woman': ["Девочки", "Девушки", "Юниорки", "Женщины"]}
+    t = Title.select().where(Title.id == title_id()).get()
+    tb_vid = my_win.tabWidget_para.currentIndex()
+    if tb_vid == 0:
+        vid = "man"
+    elif tb_vid == 1:
+        vid = "woman"
+    else:
+        vid = "mix"
+    gamer_current = t.gamer # текущий пол игроков
+    id_title = t.id # текущий id
+    pol = sex_dict[vid]
+    titles = Title.select()  # получает все title.id по убыванию
+    title_new = Title.select().where(Title.id == id_title).get()
+
+    name = title_new.name
+    date_comp = title_new.data_start
+    if gamer_current not in pol: # если открыты соревнования юношей и перходим на списки пар девушек, то октрываем соревнования девушек
+        full_name_with_age = my_win.go_to_Action.text()  # полное название к которым переходим при создании парных списков
+        buttons = frame.findChildren(QPushButton)
+        for btn in buttons:
+            if btn.isFlat() is True:
+                btn.setFlat(False)
+        # ==== смена названия в меню -перейти к-
+        full_name_current = t.full_name_comp # полное название текущих соревнований
+        age_current = t.vozrast
+        my_win.go_to_Action.setText(f"{full_name_current} {age_current}") # надпись на меню -перейти к- соревнования которые были
+
+        mark = full_name_with_age.find("до") 
+        if mark > 0: 
+            full_name = full_name_with_age[:mark - 1] # название без возраста
+            age = full_name_with_age[mark:]# == возраст участников -до 
+        else:
+            full_name = full_name_with_age
+            age = ""
+
+        titles = Title.get((Title.full_name_comp == full_name) & (Title.vozrast == age)) 
+        id_title = titles.id # id соревнования на которое переходим
+        gamer = titles.gamer
+        # смена цвета фона формы в зависимости от пола играющих
+        if gamer in pol:
+            my_win.setStyleSheet("#MainWindow{background-color:lightpink}")
+        else:
+            my_win.setStyleSheet("#MainWindow{background-color:lightblue}")
+
+    player_list = Players_double.select().where((Players_double.title_id == id_title) & (Players_double.double_vid == vid))
+ # ==== вариант с кнопками быстрого переключения ====
+    sex = ["Девочки", "Девушки", "Юниорки", "Женщины"]
+    font_und = QFont("DejaVuSans-Bold", 10)
+    font_und.setUnderline(True)
+    font_no_und = QFont("DejaVuSans-Bold", 10)
+    font_no_und.setUnderline(False)
+    titles = Title.select().where(Title.data_start == date_comp) # кол-во соревнований на однаковую дату
+    count_comp = len(titles)
+    d = 0
+    button_list = [Button_turnir_1, Button_turnir_2, Button_turnir_3, Button_turnir_4]
+    for j in titles:
+        t = j.id
+        g = j.gamer
+        v = j.vozrast
+        if g in sex:
+            pol = "Д"
+        else:
+            pol = "М"
+        button_list[d].setText(f'{pol}{v[2:]}')
+        if t == id_title:
+            button_list[d].setFont(font_und)
+            button_list[d].setFlat(True)
+        d += 1
+
+    if count_comp == 1:
+        Button_turnir_1.setEnabled(False)
+        Button_turnir_2.setEnabled(False)
+        Button_turnir_3.setEnabled(False)
+        Button_turnir_4.setEnabled(False)
+    elif count_comp == 2:
+        Button_turnir_1.setEnabled(True)
+        Button_turnir_2.setEnabled(True)
+        Button_turnir_3.setEnabled(False)
+        Button_turnir_4.setEnabled(False)
+    elif count_comp == 4:
+        Button_turnir_1.setEnabled(True)
+        Button_turnir_2.setEnabled(True)
+        Button_turnir_3.setEnabled(True)
+        Button_turnir_4.setEnabled(True)
+    # tab_double()
+    button_comp_enabled()
+    fill_table(player_list)
 
 def page_double():
     """Включает вкладку -пары- в зависимости от чекбокса на владке -система-"""
@@ -4047,7 +4136,7 @@ def page():
         fill_table(player_list)
         my_win.label_16.hide()
         my_win.tableView_net.hide() # сетка ручной жеребьевки на 32
-        tab_etap()
+        # tab_etap()
     elif tb == 4: # парный разряд
         my_win.resize(1110, 750)
         my_win.toolBox.setGeometry(QtCore.QRect(10, 40, 243, 659))
@@ -4055,6 +4144,16 @@ def page():
         my_win.tabWidget_2.setGeometry(QtCore.QRect(260, 255, 841, 470)) # устанавливает tabWidget_2
         my_win.groupBox_match_double.setEnabled(True)
         my_win.tabWidget_3.setTabEnabled(0, True)
+        tb_vid = my_win.tabWidget_para.currentIndex()
+        if tb_vid == 0:
+            vid = "man"
+        elif tb_vid == 1:
+            vid = "woman"
+        else:
+            vid = "mix"
+        player_list = Players_double.select().where((Players_double.title_id == title_id()) & (Players_double.double_vid == vid))
+        fill_table(player_list)
+
     elif tb == 5: # вкладка -рейтинг-
         my_win.tabWidget_2.setCurrentIndex(0)
         my_win.resize(1110, 750)
@@ -4086,8 +4185,6 @@ def page():
  
         load_combo_etap_begunki()
    
-        # ======
-    hide_show_columns(tb)
 
 def otchestvo_input():
     """елси требуется отчество то вклюяает поле и выводит в listView сохраненые данные"""
@@ -10519,7 +10616,7 @@ def choice_filter_on_system():
             gr_txt = [i.stage for i in systems_sf if i.stage not in group_list]
             gr_txt.insert(0, "все финалы")
             my_win.comboBox_filter_number_group_final.addItems(gr_txt)
-           
+              
         player_list = Choice.select().where(Choice.title_id == title_id())
         fill_table(player_list)
  
@@ -10599,11 +10696,6 @@ def load_coach_to_combo():
     tmp_list.sort() 
     tmp_list.insert(0, "")
     my_win.comboBox_fltr_coach.addItems(tmp_list)            
-    # count_list = len(tmp_list)
-    # count_uniq = len(set(tmp_list)) 
-    # if count_list > count_uniq:
-    #     duplicat = [x for i, x in enumerate(tmp_list) if i != tmp_list.index(x)]
-    #     return duplicat
 
 
 def color_region_in_tableWidget(fg):
@@ -10636,65 +10728,16 @@ def color_region_in_tableWidget(fg):
                     my_win.tableWidget.item(k, 3).setForeground(QBrush(QColor(255, 0, 0)))  # окрашивает текст в красный цвет
 
 
-def hide_show_columns(tb):
+def hide_show_columns(tb, num_columns):
     """скрывает или показывает столбцы TableView"""
-    # my_win.tableView.hideColumn(0)
-    for k in range(0, 19):
+    for k in range(0, 20):
         my_win.tableView.hideColumn(k)
-
-    if tb == 0: # титул
-        pass
-    elif tb == 1: # участники
-        my_win.tableView.showColumn(1) # фамилия имя
-        my_win.tableView.showColumn(2) # др
-        my_win.tableView.showColumn(3) # рейтинг
-        my_win.tableView.showColumn(4) # город
-        my_win.tableView.showColumn(5) # регион
-        my_win.tableView.showColumn(6) # разряд
-        my_win.tableView.showColumn(7) # тренеры
-        my_win.tableView.showColumn(8) # место
-        # my_win.tableView.showColumn(16) # заявка
-    elif tb == 2: # система
-        my_win.tableView.showColumn(1) # фамилия имя
-        my_win.tableView.showColumn(2) # регион
-        my_win.tableView.showColumn(3) # предварительный
-        my_win.tableView.showColumn(4) # место группы
-        my_win.tableView.showColumn(5) # пф
-        my_win.tableView.showColumn(6) # тренеры
-        my_win.tableView.showColumn(7) # место
-        my_win.tableView.showColumn(8) # место в группе
-
-        my_win.tableView.showColumn(9) # тренеры
-        my_win.tableView.showColumn(10) # место
-        my_win.tableView.showColumn(11) # место в группе
-    elif tb == 3:
-        my_win.tableView.showColumn(2)
-        my_win.tableView.showColumn(3) # регион
-        my_win.tableView.showColumn(4) # игрок 1
-        my_win.tableView.showColumn(5) # игрок 2
-        my_win.tableView.showColumn(6) # победитель        
-        my_win.tableView.showColumn(8) # общий счет
-        my_win.tableView.showColumn(9) # счет в партиях
-    elif tb == 5:
-        my_win.tableView.showColumn(1)
-        my_win.tableView.showColumn(2)
-        my_win.tableView.showColumn(3)
-        my_win.tableView.showColumn(4)
-        my_win.tableView.showColumn(5)
-        my_win.tableView.showColumn(6)
-        my_win.tableView.showColumn(7)
-    elif tb == 6:
-        # my_win.tableView.showColumn(0)
-        my_win.tableView.showColumn(1)
-        my_win.tableView.showColumn(2)
-        my_win.tableView.showColumn(3)
-        my_win.tableView.showColumn(4)
-        my_win.tableView.showColumn(5)
-        my_win.tableView.showColumn(6)
-    # elif tb == 7:
-        # my_win.tableWidget.showColumn(0)
-        # my_win.tableWidget.showColumn(1)
-
+    for m in num_columns:
+        my_win.tableView.showColumn(m)
+    if tb == 2:
+       my_win.tableView.hideColumn(1) 
+    my_win.tableView.hideColumn(0)
+    
 
 def etap_made(stage):
     """создание этапов соревнований"""
@@ -18155,6 +18198,7 @@ def add_double_player_to_list():
                                 region_2=ct_2, r_2=r_2, region_main=city_main, r_sum=sum_r,
                                   double_vid=vid, title_id=title_id()).save()
 
+    fill_table(player_list)
 
 # def proba_pdf():
     # """проба пдф"""
@@ -18241,29 +18285,29 @@ def add_double_player_to_list():
 #     #     # txt = str(bd_new)
 #     #     Player.update(region=reg).execute()
 #     print("Все записи обновлены")
-# =======        
-def proba():
-    myconn = pymysql.connect(host = "localhost", user = "root", passwd = "db_pass", database = "mysql_db") 
-    # создать таблицу
+# # =======        
+# def proba():
+#     myconn = pymysql.connect(host = "localhost", user = "root", passwd = "db_pass", database = "mysql_db") 
+#     # создать таблицу
     
-    class Players_double(BaseModel):
-        player_1 = CharField(50)    
-        region_1 = CharField()
-        r_1 = IntegerField()
-        player_2 = CharField(50)
-        region_2 = CharField()
-        r_2 = IntegerField()
-        region_main = CharField()
-        r_sum = IntegerField()
-        double_vid = CharField(30)
-        title_id = ForeignKeyField(Title)
+#     class Players_double(BaseModel):
+#         player_1 = CharField(50)    
+#         region_1 = CharField()
+#         r_1 = IntegerField()
+#         player_2 = CharField(50)
+#         region_2 = CharField()
+#         r_2 = IntegerField()
+#         region_main = CharField()
+#         r_sum = IntegerField()
+#         double_vid = CharField(30)
+#         title_id = ForeignKeyField(Title)
     
-        class Meta:
-            db_table = "players_double"
-            order_by = "r_sum"
+#         class Meta:
+#             db_table = "players_double"
+#             order_by = "r_sum"
 
-    db.create_tables([Players_double])
-    db.close()
+#     db.create_tables([Players_double])
+#     db.close()
      # ============ импорт новых данных в mysql =========
     # import glob
     # fname = QFileDialog.getOpenFileName(
@@ -18306,7 +18350,7 @@ def proba():
 #     # #     # migrate(migrator.rename_column('titles', 'kat_sek', 'kat_sec')) # Переименование столбца (таблица, старое название, новое название столбца)
 #     migrate(migrator.add_column('delete_players', 'patronymic_id', patronymic_id)) # Добавление столбца (таблица, столбец, повтор название столбца)
 
-my_win.Button_proba.clicked.connect(proba) # запуск пробной функции
+# my_win.Button_proba.clicked.connect(proba) # запуск пробной функции
 
 # ===== переводит фокус на поле ввода счета в партии вкладки -группа-
 my_win.lineEdit_pl1_s1.returnPressed.connect(focus)
@@ -18359,7 +18403,7 @@ my_win.tableWidget.doubleClicked.connect(move_row_in_tablewidget)
 my_win.tabWidget.currentChanged.connect(tab)
 my_win.tabWidget_stage.currentChanged.connect(tab_etap)
 my_win.tabWidget_3.currentChanged.connect(tab_double)
-# my_win.tabWidget_stage.currentChanged.connect(tab_result)
+my_win.tabWidget_para.currentChanged.connect(tab_double_vid)
 
 my_win.toolBox.currentChanged.connect(tool_page)
 # ==================================

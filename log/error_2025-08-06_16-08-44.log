@@ -1,0 +1,7 @@
+2025-08-06 16:09:09,325 - ERROR - Необработанное исключение: TypeError: tab_enabled() got an unexpected keyword argument 'title_id'
+2025-08-06 16:09:09,326 - ERROR - Трассировка стека:
+Traceback (most recent call last):
+  File "c:\Users\Alex\Competitions_TT_v1.1\main.py", line 3713, in tab_double_vid
+    tab_enabled(title_id=id_title)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+TypeError: tab_enabled() got an unexpected keyword argument 'title_id'
